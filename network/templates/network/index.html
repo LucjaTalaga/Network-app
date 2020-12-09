@@ -1,0 +1,45 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1>All posts</h1>
+    {% if user.is_authenticated %}
+    <div class="comment-box">
+        <form id="new-post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="postText"><strong>New Post </strong> </label>
+                <textarea class="form-control" id="postText" rows="3"></textarea> 
+            </div>
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <section class="posts">
+        {% for post in posts %}
+            <div class='post-container'>
+                <h4><a href="{% url 'profile' post.author.id %}">{{ post.author }}</a></h4>
+                <p>{{ post.content }}</p>
+                <p>{{ post.likes }} likes</p>
+                {% if user.is_authenticated %}
+                    <form class="toggle-like">
+                        {% csrf_token %}
+                        {% if post.is_liked %}
+                            <button class="btn btn-primary" data-method="DELETE" data-id={{post.id}}> Dislike</button>
+                        {% else %}
+                            <button class="btn btn-primary" data-method="POST" data-id={{post.id}}>Like</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </section>
+    <ul class="pagination">
+        {% if posts.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a></li>
+        {% endif %}
+        {% if posts.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">Next</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
