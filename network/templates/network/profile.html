@@ -2,10 +2,10 @@
 
 {% block body %}
 
-    <h1>{{profile}} profile page</h1>
-    <h3>{{followers}} followers</h3>
-    <h3>{{profile}} is following {{following}} people</h3>
-    <h2>{{profile}} posts:</h2>
+    <h2 class="profile"><strong>{{profile}}</strong> profile page</h2>
+    <h3 class="profile">{{followers}} followers</h3>
+    <h3 class="profile">{{profile}} is following {{following}} people</h3>
+    <h4 class="profile">{{profile}} posts:</h4>
     {% if user.is_authenticated and user != profile %}
         <form id="follow">
             {% csrf_token %}
@@ -19,8 +19,8 @@
     <section class="posts">
         {% for post in posts %}
             <div class='post-container'>
-                <p>{{ post.content }}</p>
-                <p>{{ post.likes }} likes</p>
+                <p class="text">{{ post.content }}</p>
+                <p class="text">{{ post.likes }} likes</p>
                 {% if user.is_authenticated %}
                     <form class="toggle-like">
                         {% csrf_token %}

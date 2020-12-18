@@ -57,9 +57,7 @@ def edit(request):
     #getting text and post id from API and if it's not empty proceed
     content = json.loads(request.body)
     text = content.get("text")
-    print(text)
     id = content.get("id")
-    print(id)
     if len(text) > 0 and id is not None:
         user_name = request.user.username
         logged_user = User.objects.get(username=user_name)

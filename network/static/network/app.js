@@ -81,8 +81,8 @@ function displayPost(author, text, id, csrf){
   const container = document.querySelector('.posts');
   const newPost = document.createElement('div');
   newPost.classList.add('post-container');
-  newPost.innerHTML = `<h4>${author}</h4>
-    <p>${text}</p>
+  newPost.innerHTML = `<h4 class='text'>${author}</h4>
+    <p class='text'>${text}</p>
     <p>0 likes</p>
     <form class="toggle-like">
     <input type="hidden" name="csrfmiddlewaretoken" value=${csrf}>
@@ -127,7 +127,7 @@ function followHandler(event) {
   });
 }
 
-function editButtonHandler(event) {
+async function editButtonHandler(event) {
   event.preventDefault();
   console.log(event.target);
   const csrf = event.target[0].value;
@@ -167,11 +167,11 @@ function saveEditedField(id, csrf, text){
     }).then(resp => {
         if (resp.error)
           throw new Error(resp.error);
-        else
+        else {
           console.log(resp.message);
+        }
     }).catch(err => {
         alert(err);
         console.log('Error ', err);
-        return false;
     });
 }

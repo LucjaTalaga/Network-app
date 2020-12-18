@@ -19,8 +19,8 @@
         {% for post in posts %}
             <div class='post-container'>
                 <h4><a href="{% url 'profile' post.author.id %}">{{ post.author }}</a></h4>
-                <p>{{ post.content }}</p>
-                <p>{{ post.likes }} likes</p>
+                <p class="text">{{ post.content }}</p>
+                <p class="text">{{ post.likes }} likes</p>
                 {% if user.is_authenticated %}
                     <form class="toggle-like">
                         {% csrf_token %}

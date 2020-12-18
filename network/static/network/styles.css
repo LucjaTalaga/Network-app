@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Josefin+Sans:wght@400;700&display=swap');
+
 .comment-box{
     max-width: 1300px;
     margin: 1rem 2rem;
@@ -11,4 +13,32 @@
 
 .post-container h4 {
     font-weight: bold;
+    color: rgba(0,0,0,.5);
+}
+
+.post-container h4 a{
+    color: rgba(0,0,0,.5);
+}
+
+.post-container h4 a:hover{
+    text-decoration: none;
+    color: black;
+}
+
+.toggle-like, .edit{
+    margin-bottom: 5px;
+}
+
+.profile {
+    margin-left: 0.2rem;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 400;
+}
+
+.profile strong{
+    color: rgba(0,0,0,.5);
+}
+
+.text{
+    font-family: 'Dancing Script', cursive;
 }
