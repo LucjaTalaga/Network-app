@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    followers = models.ManyToManyField('self')
+    followers = models.ManyToManyField('self', symmetrical=False)
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")

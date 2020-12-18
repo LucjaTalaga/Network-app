@@ -10,7 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     const follow = document.querySelector('#follow');
     if (follow){ 
-    follow.addEventListener('click', followHandler);
+    follow.addEventListener('submit', followHandler);
+    }
+    const edit = document.querySelectorAll('.edit');
+    if (edit){
+      edit.forEach(button => {
+        button.addEventListener('submit', editButtonHandler);
+      });
     }
 });
 
@@ -87,12 +93,16 @@ function displayPost(author, text, id, csrf){
 }
 
 function followHandler(event) {
-  console.log(event.target);
-  const button = event.target;
+  event.preventDefault();
+  const csrf = event.target[0].value;
+  const button = event.target[1];
   const method = button.dataset.method;
   const id = button.dataset.id;
   fetch('/follow', {
     method: method,
+    headers: { 
+      'X-CSRFToken': csrf
+    },
     body: JSON.stringify({
         id: id
     })
@@ -105,10 +115,63 @@ function followHandler(event) {
       button.dataset.method = resp.method == 'POST' ? 'DELETE' : 'POST';
       button.innerText = resp.method == 'POST' ? 'Unfollow' : 'Follow';     
       const toAdd = resp.method == 'POST' ? 1 : -1;
-      const text = button.previousElementSibling.previousElementSibling.previousElementSibling.innerText;
+      const textField = event.target.previousElementSibling.previousElementSibling.previousElementSibling;
+      const text = textField.innerText;
+      const followers = parseInt(text);
       console.log(text);
-      followers += toAdd;  
+      console.log(followers);
+      const followersUpdated = followers + toAdd;
+      textField.innerHTML = text.replace(followers, followersUpdated);  
     }).catch(err => {
       console.log('Error ', err);
   });
+}
+
+function editButtonHandler(event) {
+  event.preventDefault();
+  console.log(event.target);
+  const csrf = event.target[0].value;
+  const button = event.target[1];
+  const textField = event.target.previousElementSibling.previousElementSibling.previousElementSibling;
+  const buttonFunction = button.innerText;
+  if (buttonFunction === "Edit"){
+    const text = textField.innerText;
+    textField.innerHTML = `<textarea>${text}</textarea>`;
+    button.innerText = 'Save';  
+  }
+  else {
+    const text = textField.firstElementChild.value;
+    button.innerText = 'Edit';
+    const id = button.dataset.id;
+    saveEditedField(id, csrf, text);
+    textField.innerHTML = text;
+  }
+}
+
+function saveEditedField(id, csrf, text){
+  
+  fetch('/edit', {
+    method: 'PUT',
+    headers: { 
+      'X-CSRFToken': csrf
+    },
+    body: JSON.stringify({
+      id: id,  
+      text: text
+    })
+  }).then(resp => {
+    if (resp.ok)
+      return resp.json();
+    else
+      return resp.json();
+    }).then(resp => {
+        if (resp.error)
+          throw new Error(resp.error);
+        else
+          console.log(resp.message);
+    }).catch(err => {
+        alert(err);
+        console.log('Error ', err);
+        return false;
+    });
 }

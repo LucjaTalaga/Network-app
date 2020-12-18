@@ -31,6 +31,12 @@
                         {% endif %}
                     </form>
                 {% endif %}
+                {% if user.is_authenticated and user == post.author %}
+                    <form class="edit">
+                        {% csrf_token %}
+                        <button class="btn btn-primary" data-id={{post.id}}> Edit </button>
+                    </form>
+                {% endif %}
             </div>
         {% endfor %}
     </section>

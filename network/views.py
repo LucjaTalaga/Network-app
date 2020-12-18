@@ -9,12 +9,17 @@ from django.core.paginator import Paginator
 from .models import User, Post
 from . import utils
 
-def index(request):
+def index(request, following=False):
 
-    #getting page_num and username and posts per page
+    #getting page_num and posts per page
     page_num = request.GET.get('page', 1)
     user_name = request.user.username
-    if (user_name):
+    # if it's the following path get the users that logged user follows and posts by these users else get all posts 
+    if (user_name and following):
+        logged_user = User.objects.get(username=user_name)
+        following = User.objects.filter(followers=logged_user)
+        page = utils.get_posts(page_num, user_name, following)
+    elif user_name:
         page = utils.get_posts(page_num, user_name)
     else:
         page = utils.get_posts(page_num)
@@ -41,6 +46,32 @@ def add_post(request):
         "id": new_post.id }, status=201)
 
     return JsonResponse({"error": "Post text not found"}, status=404)
+
+@login_required(login_url='login')
+def edit(request):
+
+    # adding post must be via "PUT" method
+    if request.method != "PUT":
+        return HttpResponseRedirect(reverse("index"))
+
+    #getting text and post id from API and if it's not empty proceed
+    content = json.loads(request.body)
+    text = content.get("text")
+    print(text)
+    id = content.get("id")
+    print(id)
+    if len(text) > 0 and id is not None:
+        user_name = request.user.username
+        logged_user = User.objects.get(username=user_name)
+        post = Post.objects.get(id=id)
+        if post.author == logged_user:
+            post.content = text
+            post.save()
+            return JsonResponse({"message": 'edited successfully'}, status=201)
+        else:
+            return JsonResponse({"error": "Post of not logged user cannot be modified"}, status=404)
+
+    return JsonResponse({"error": "Post id or text havent't been found"}, status=404)
 
 @login_required(login_url='login')
 def like(request):
@@ -96,7 +127,7 @@ def profile(request, id):
     #get user of the profile and logged user, then load the posts
     profile_user = User.objects.get(id=id)
     user_name = request.user.username
-    page_num = 1
+    page_num = request.GET.get('page', 1)
     if user_name:
         logged_user = User.objects.get(username=user_name)
         page = utils.get_posts(page_num, user_name, profile_user)
